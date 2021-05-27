@@ -96,7 +96,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\lib\x86;C:\Users\potio\Managed\repos\SDL2-2.0.14\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;msvcrtd.lib;vcruntimed.lib;ucrtd.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <EntryPointSymbol>main</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,12 +150,14 @@
     <ClCompile Include="Host.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="rc.cpp" />
+    <ClCompile Include="ScreenCap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Cartridge.h" />
     <ClInclude Include="Host.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="ScreenCap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
