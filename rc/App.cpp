@@ -1,7 +1,6 @@
 #include "App.h"
 #include "Input.h"
 #include "common.h"
-#include <turbojpeg.h>
 
 
 App::App() {

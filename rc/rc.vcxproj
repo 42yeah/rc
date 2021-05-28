@@ -88,14 +88,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\potio\Managed\repos\jpeg-9d;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\include;C:\Users\potio\Managed\repos\SDL2-2.0.14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\potio\Managed\repos\libjpeg-turbo\include;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\include;C:\Users\potio\Managed\repos\SDL2-2.0.14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\potio\Managed\repos\jpeg-9d;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\lib\x86;C:\Users\potio\Managed\repos\SDL2-2.0.14\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;msvcrtd.lib;vcruntimed.lib;ucrtd.lib;SDL2_ttf.lib;libjpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\potio\Managed\repos\libjpeg-turbo\lib;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\lib\x86;C:\Users\potio\Managed\repos\SDL2-2.0.14\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;msvcrtd.lib;vcruntimed.lib;ucrtd.lib;SDL2_ttf.lib;turbojpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>

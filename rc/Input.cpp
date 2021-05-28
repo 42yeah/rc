@@ -34,11 +34,11 @@ void Input::sdl_event(App& app, const SDL_Event& e) {
 			// Switch cartridge!
 			switch (result) {
 			case InputResult::UNKNOWN:
-				assert("Unknown input result", false);
+				assert(("Unknown input result", false));
 				break;
 
 			case InputResult::CONNECT:
-				assert("Not implemented yet", false);
+				assert(("Not implemented yet", false));
 				break;
 
 			case InputResult::HOST:

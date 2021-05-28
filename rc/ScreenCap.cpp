@@ -1,6 +1,7 @@
 #include "ScreenCap.h"
 #include <iostream>
 #include <cassert>
+#include <fstream>
 #include "common.h"
 
 
@@ -46,9 +47,12 @@ ScreenCap::ScreenCap(SDL_Renderer* renderer) {
     BitBlt(memory_dc, 0, 0, width, height, screen_dc, x, y, SRCCOPY);
     surface = SDL_CreateRGBSurfaceFrom(bbits, width, height, 24, width * 3, 0xff0000, 0x00ff00, 0x0000ff, 0x000000);
     texture = SDL_CreateTexture(renderer, surface->format->format, SDL_TEXTUREACCESS_STREAMING, surface->w, surface->h);
+
+    tj_instance = tjInitCompress();
 }
 
 ScreenCap::~ScreenCap() {
+    tjDestroy(tj_instance);
     SDL_DestroyTexture(texture);
     ReleaseDC(NULL, screen_dc);
 	DeleteDC(memory_dc);
@@ -69,10 +73,21 @@ SDL_Texture* ScreenCap::get_texture() {
     return texture;
 }
 
-const char* ScreenCap::get_data() const {
-    return (const char*) bbits;
+std::unique_ptr<Buffer> ScreenCap::get_jpeg_data() const {
+    unsigned char* data = nullptr;
+    unsigned long len = 0;
+
+    assert(tjCompress2(tj_instance, (const unsigned char*) surface->pixels, surface->w, 0, surface->h, TJPF_RGB, &data, &len, TJSAMP_444, 10, 0) >= 0);
+    return std::make_unique<Buffer>(data, len);
 }
 
 unsigned int ScreenCap::get_data_size() const{
     return surface->pitch * surface->h;
+}
+
+Buffer::Buffer(unsigned char* data, int len) : data(data), len(len) {
+}
+
+Buffer::~Buffer() {
+    tjFree(data);
 }

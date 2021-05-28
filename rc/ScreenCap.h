@@ -1,8 +1,21 @@
 #pragma once
 
+#include <sstream>
 #include <Windows.h>
 #include <SDL.h>
+#include <turbojpeg.h>
 
+
+// TurboJPEG JPEG buffer, managed by... This struct.
+struct Buffer {
+public:
+	Buffer(unsigned char* data, int len);
+
+	~Buffer();
+
+	unsigned char* data;
+	int len;
+};
 
 class ScreenCap {
 public:
@@ -14,7 +27,7 @@ public:
 
 	SDL_Texture* get_texture();
 
-	const char* get_data() const;
+	std::unique_ptr<Buffer> get_jpeg_data() const;
 
 	unsigned int get_data_size() const;
 
@@ -25,5 +38,6 @@ private:
 	HBITMAP bitmap;
 	BYTE* bbits;
 	SDL_Surface* surface;
+	tjhandle tj_instance;
 };
 
