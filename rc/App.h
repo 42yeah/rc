@@ -8,12 +8,6 @@
 #include "Cartridge.h"
 
 
-template<typename T>
-T nullcheck(T input) {
-    assert(input);
-    return input;
-}
-
 class Text {
 public:
     Text(App &app, std::string str);

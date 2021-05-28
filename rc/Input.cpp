@@ -42,7 +42,7 @@ void Input::sdl_event(App& app, const SDL_Event& e) {
 				break;
 
 			case InputResult::HOST:
-				std::unique_ptr<Host> host(new Host(input));
+				std::unique_ptr<Host> host(new Host(app, input));
 				app.switch_cartridge(std::move(host));
 				break;
 			}

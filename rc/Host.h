@@ -2,11 +2,12 @@
 
 #include <iostream>
 #include "Cartridge.h"
+#include "ScreenCap.h"
 
 
 class Host : public Cartridge {
 public:
-    Host(std::string server_addr);
+    Host(App &app, std::string server_addr);
 
     virtual void init(App& app) override;
 
@@ -18,5 +19,6 @@ public:
 
 private:
     std::string server_addr;
+    ScreenCap capturer;
 };
 
