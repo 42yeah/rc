@@ -11,6 +11,8 @@ App::App() {
     font = nullcheck(TTF_OpenFont("ProggyClean.ttf", 18));
     running = true;
 
+    line_height = draw_text("TEST").height;
+
     // Asks for address to connect initially
     switch_cartridge(std::unique_ptr<Input>(new Input()));
 }
@@ -41,6 +43,8 @@ void App::start() {
             this->cartridge->update(*this);
         }
         SDL_RenderPresent(renderer);
+
+        SDL_Delay(1000 / 60);
     }
 }
 
@@ -67,6 +71,10 @@ const Text& App::draw_text(std::string str) {
     }
     text[str] = std::make_unique<Text>(*this, str);
     return *text[str].get();
+}
+
+int App::get_line_height() const {
+    return line_height;
 }
 
 Text::Text(App &app, std::string str) {

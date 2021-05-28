@@ -36,6 +36,8 @@ public:
 
     const Text& draw_text(std::string str);
 
+    int get_line_height() const;
+
 private:
     std::map<std::string, std::unique_ptr<Text>> text;
     SDL_Window* window;
@@ -43,5 +45,6 @@ private:
     std::unique_ptr<Cartridge> cartridge;
     TTF_Font* font;
     bool running;
+    int line_height;
 };
 

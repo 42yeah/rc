@@ -14,6 +14,10 @@ public:
 
 	SDL_Texture* get_texture();
 
+	const char* get_data() const;
+
+	unsigned int get_data_size() const;
+
 private:
 	SDL_Texture* texture;
 	HDC screen_dc, memory_dc;

@@ -68,3 +68,11 @@ void ScreenCap::shot(SDL_Renderer* renderer) {
 SDL_Texture* ScreenCap::get_texture() {
     return texture;
 }
+
+const char* ScreenCap::get_data() const {
+    return (const char*) bbits;
+}
+
+unsigned int ScreenCap::get_data_size() const{
+    return surface->pitch * surface->h;
+}
