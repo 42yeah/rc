@@ -4,6 +4,9 @@
 #include "Host.h"
 
 
+Input::Input() : input(""), result(InputResult::UNKNOWN) {
+}
+
 void Input::init(App& app) {
 	input = "";
 	result = InputResult::UNKNOWN;

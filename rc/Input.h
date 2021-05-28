@@ -9,6 +9,8 @@ enum class InputResult {
 
 class Input : public Cartridge {
 public:
+    Input();
+
     virtual void init(App& app) override;
 
     virtual void sdl_event(App& app, const SDL_Event& e) override;
