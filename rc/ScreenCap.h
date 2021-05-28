@@ -29,8 +29,6 @@ public:
 
 	std::unique_ptr<Buffer> get_jpeg_data() const;
 
-	unsigned int get_data_size() const;
-
 private:
 	SDL_Texture* texture;
 	HDC screen_dc, memory_dc;
