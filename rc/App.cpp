@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Input.h"
 #include "common.h"
+#include <turbojpeg.h>
 
 
 App::App() {
@@ -43,7 +44,7 @@ void App::start() {
             this->cartridge->update(*this);
         }
         SDL_RenderPresent(renderer);
-
+        
         SDL_Delay(1000 / 60);
     }
 }
