@@ -3,6 +3,7 @@
 #include "Cartridge.h"
 #include "common.h"
 #include <iostream>
+#include <optional>
 
 
 class Connect : public Cartridge {
@@ -31,6 +32,6 @@ private:
     bool worker_running;
     std::string other_token;
     unsigned int id;
-    std::string token;
+    std::optional<std::string> token;
 };
 

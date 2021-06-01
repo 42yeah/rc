@@ -1,13 +1,16 @@
 #include "Connect.h"
 #include <iostream>
 #include <string>
+#include <thread>
 #include "App.h"
 #include "Input.h"
 #include "Command.h"
 #include "Packet.h"
 
+#define TRY_DROP(x, err) if (!x.has_value()) { std::cout << "[ERR] " << err << std::endl; continue; }
 
-Connect::Connect(std::string other_token, std::string server_addr) : other_token(other_token), server_addr(server_addr), worker_running(true), id(0), token("") {
+
+Connect::Connect(std::string other_token, std::string server_addr) : other_token(other_token), server_addr(server_addr), worker_running(true), id(0), token({}) {
 	server_sin.sin_addr.S_un.S_addr = 0;
 	server_sin.sin_port = 0;
 	server_sin.sin_family = AF_INET;
@@ -31,16 +34,16 @@ void receiver(std::reference_wrapper<Connect> ref_connect, std::reference_wrappe
 		}
 		Packet packet(data, size);
 		auto command = packet.next<ClientCommand>();
-		// TRY_DROP(command, "the server gave no command");
+		TRY_DROP(command, "the server gave no command");
 		switch (command.value()) {
 		case ClientCommand::NOP:
 			break;
 
 		case ClientCommand::SET_TOKEN: {
 			auto id = packet.next<unsigned int>();
-			// TRY_DROP(id, "id is empty");
+			TRY_DROP(id, "id is empty");
 			auto token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
-			// TRY_DROP(token, "token is empty or invalid");
+			TRY_DROP(token, "token is empty or invalid");
 			std::string token_str(token.value(), CLIENT_TOKEN_LEN);
 			connect.set_token(id.value(), token_str);
 			break;
@@ -73,12 +76,27 @@ void Connect::init(App& app) {
 	}
 	inet_pton(AF_INET, ip.c_str(), (in_addr *) &server_sin.sin_addr);
 	server_sin.sin_port = htons(std::stoi(port));
+
+	std::thread receiver_thread(receiver, std::reference_wrapper<Connect>(*this), std::reference_wrapper<App>(app));
+	receiver_thread.detach();
+
+	PacketStream stream;
+	unsigned int access_code_len = std::strlen(ACCESS_CODE);
+	stream << Command::CLIENTS_REGISTER << access_code_len;
+	stream.write(ACCESS_CODE, access_code_len);
+	std::string token_request = stream.get_string();
+	sendto(app.get_client_socket(), token_request.c_str(), token_request.size(), 0, (sockaddr*)& server_sin, sizeof(server_sin));
 }
 
 void Connect::sdl_event(App& app, const SDL_Event& e) {
 }
 
 void Connect::update(App& app) {
+	if (!token.has_value()) {
+		app.draw_text("Trying to obtain token...").draw(app, 0, 0);
+	} else {
+		app.draw_text("Token obtained. Trying to pair using buddy code " + other_token).draw(app, 0, 0);
+	}
 }
 
 void Connect::destroy(App& app) {

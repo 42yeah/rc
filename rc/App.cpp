@@ -32,12 +32,12 @@ void App::start() {
     while (running) {
         SDL_Event e;
         while (SDL_PollEvent(&e) > 0) {
+            if (this->cartridge.get() != nullptr) {
+                this->cartridge->sdl_event(*this, e);
+            }
             switch (e.type) {
             case SDL_QUIT:
                 return;
-            }
-            if (this->cartridge.get() != nullptr) {
-                this->cartridge->sdl_event(*this, e);
             }
         }
 
