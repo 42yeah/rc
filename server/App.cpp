@@ -12,6 +12,8 @@ App::App() {
 	sin.sin_port = htons(62017);
 	sin.sin_addr.S_un.S_addr = INADDR_ANY;
 	
+	running = true;
+
 	assert(("Bind failed", 0 == bind(server_socket, (sockaddr*) &sin, sizeof(sin))));
 }
 
@@ -20,44 +22,45 @@ App::~App() {
 }
 
 void App::start() {
+	std::shared_ptr<Channel> channel = std::make_shared<Channel>();
 	std::vector<std::unique_ptr<Worker> > workers;
-	for (int i = 0; i < 10; i++) {
-		workers.push_back(std::make_unique<Worker>());
+	for (int i = 0; i < SERVER_WORKER_SIZE; i++) {
+		workers.push_back(std::make_unique<Worker>(channel));
+	}
+	for (int i = 0; i < workers.size(); i++) {
+		channel->send(Message(MessageType::STOP));
 	}
 }
 
 
-void worker_thread(Worker* worker, std::shared_ptr<Channel> channel) {
+void worker_thread(Worker* worker) {
 	while (true) {
-		Message msg = channel->recv();
+		Message msg = worker->get_channel().recv();
+		int* socks = nullptr;
 		switch (msg.type) {
 		case MessageType::STOP:
 			return;
+
+		case MessageType::START:
+			break;
+
+		default:
+			assert(("Unknown message", false));
+			break;
 		}
+
+		
 	}
 }
 
-Worker::Worker() : id(worker_id++) {
-	channel = std::make_shared<Channel>();
-	thread = std::unique_ptr<std::thread>(new std::thread(worker_thread, this, channel));
+Worker::Worker(std::shared_ptr<Channel> channel) : id(worker_id++), channel(channel) {
+	thread = std::unique_ptr<std::thread>(new std::thread(worker_thread, this));
 }
 
 Worker::~Worker() {
-	if (state.get() != nullptr) {
-		state->destroy(*this);
-	}
 	if (thread.get() != nullptr) {
-		channel->send(Message(MessageType::STOP));
 		thread->join();
 	}
-}
-
-void Worker::switch_state(std::unique_ptr<State> new_state) {
-	if (state.get() != nullptr) {
-		state->destroy(*this);
-	}
-	state.reset(new_state.release());
-	state->init(*this);
 }
 
 Channel& Worker::get_channel() {

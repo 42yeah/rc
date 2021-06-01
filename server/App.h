@@ -7,13 +7,14 @@
 #include <optional>
 #include <mutex>
 #include <condition_variable>
-#include "State.h"
 
 #define SERVER_WORKER_SIZE 10
+#define MAXIMUM_PAYLOAD_SIZE 508
 
 
 enum class MessageType {
-	STOP
+	STOP,
+	START // Data should contain two sockets
 };
 
 struct Message {
@@ -45,18 +46,15 @@ private:
 
 class Worker {
 public:
-	Worker();
+	Worker(std::shared_ptr<Channel> channel);
 
 	~Worker();
-
-	void switch_state(std::unique_ptr<State> new_state);
 
 	Channel& get_channel();
 
 private:
 	std::shared_ptr<Channel> channel;
 	std::unique_ptr<std::thread> thread;
-	std::unique_ptr<State> state;
 	int id;
 };
 
@@ -69,6 +67,7 @@ public:
 	void start();
 
 private:
+	bool running;
 	int server_socket;
 	std::vector<std::unique_ptr<Worker> > worker_pool;
 };
