@@ -1,61 +1,96 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
+#include <cassert>
 #include <vector>
 #include <thread>
 #include <WinSock2.h>
 #include <optional>
+#include <thread>
 #include <mutex>
-#include <condition_variable>
+#include "Client.h"
 
 #define SERVER_WORKER_SIZE 10
-#define MAXIMUM_PAYLOAD_SIZE 508
+#define MAXIMUM_PAYLOAD_SIZE 512
 
 
-enum class MessageType {
-	STOP,
-	START // Data should contain two sockets
-};
+struct AppData {
+	AppData();
 
-struct Message {
-	Message(MessageType type);
+	~AppData() = default;
 
-	Message(MessageType type, void* data);
-
-	MessageType type;
-	void* data;
-};
-
-class Channel {
-public:
-	Channel();
-
-	~Channel();
-
-	void send(Message msg);
-
-	Message recv();
-
-	std::optional<Message> recv_noblock();
-
-private:
+	bool running;
+	Clients clients;
 	std::mutex mutex;
-	std::condition_variable cond_var;
-	std::vector<Message> messages;
+	int server_socket;
 };
 
-class Worker {
+enum class Command {
+	NOP = 0,
+
+	CLIENTS_REGISTER
+};
+
+enum class ClientCommand {
+	NOP = 0,
+
+	SET_TOKEN = 1
+};
+
+struct Packet {
+	Packet(char* ptr, unsigned int size) : ptr(ptr), size(size), current_offset(0) {}
+
+	template<typename T>
+	std::optional<T> next() {
+		if (current_offset + sizeof(T) > size) {
+			return {};
+		}
+		int old_offset = current_offset;
+		current_offset += sizeof(T);
+		return *(T*) &ptr[old_offset];
+	}
+
+	template<typename T>
+	std::optional<T*> next_ptr(unsigned int buf_size) {
+		if (current_offset + buf_size > size) {
+			return {};
+		}
+		int old_offset = current_offset;
+		current_offset += buf_size;
+		return (T*) &ptr[old_offset];
+	}
+
+	char* ptr;
+	unsigned int size;
+	int current_offset;
+};
+
+class PacketStream {
 public:
-	Worker(std::shared_ptr<Channel> channel);
+	PacketStream() : size(0) {}
 
-	~Worker();
+	template<typename T>
+	PacketStream &operator<<(T what) {
+		assert(size + sizeof(T) <= MAXIMUM_PAYLOAD_SIZE);
+		size += sizeof(T);
+		stream.write((const char*) &what, sizeof(T));
+		return *this;
+	}
 
-	Channel& get_channel();
+	void write(const char* what, unsigned int size) {
+		assert(this->size + size <= MAXIMUM_PAYLOAD_SIZE);
+		this->size += size;
+		stream.write(what, size);
+	}
+
+	std::string get_string() {
+		return stream.str();
+	}
 
 private:
-	std::shared_ptr<Channel> channel;
-	std::unique_ptr<std::thread> thread;
-	int id;
+	std::stringstream stream;
+	unsigned int size;
 };
 
 class App {
@@ -67,8 +102,6 @@ public:
 	void start();
 
 private:
-	bool running;
-	int server_socket;
-	std::vector<std::unique_ptr<Worker> > worker_pool;
+	std::vector<std::thread> pool;
+	AppData data;
 };
-
