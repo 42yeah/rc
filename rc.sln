@@ -7,6 +7,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rc", "rc\rc.vcxproj", "{DA3
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "server\server.vcxproj", "{0D4207E6-05C5-4CCB-9352-938F9EBFB1D0}"
 EndProject
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "rc2", "Debug\rc2.exe", "{AAE8B8E9-859C-459E-A829-CDE26215AEC1}"
+	ProjectSection(DebuggerProjectSystem) = preProject
+		PortSupplier = 00000000-0000-0000-0000-000000000000
+		Executable = C:\Users\potio\Managed\repos\rc\Debug\rc2.exe
+		RemoteMachine = DESKTOP-BDF21BK
+		StartingDirectory = C:\Users\potio\Managed\repos\rc\rc
+		Environment = msbuildloadmicrosofttargetsreadonly=true	vslang=1036	vsappidname=devenv.exe	pkgdefapplicationconfigfile=C:\Users\potio\AppData\Local\Microsoft\VisualStudio\16.0_8522df49\devenv.exe.config	localappdata=C:\Users\potio\AppData\Local	userdomain_roamingprofile=DESKTOP-BDF21BK	fps_browser_user_profile_string=Default	commonprogramfiles(x86)=C:\Program Files (x86)\Common Files	visualstudiodir=C:\Users\potio\Documents\Visual Studio 2019	servicehublogsessionkey=85212B4A	os=Windows_NT	systemdrive=C:	processor_architew6432=AMD64	onedriveconsumer=C:\Users\potio\OneDrive	windir=C:\Windows	homedrive=C:	comspec=C:\Windows\system32\cmd.exe	onedrive=C:\Users\potio\OneDrive	visualstudioversion=16.0	processor_revision=9e0a	psmodulepath=C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules	computername=DESKTOP-BDF21BK	commonprogramfiles=C:\Program Files (x86)\Common Files	complus_installroot=	tmp=C:\Users\potio\AppData\Local\Temp	homepath=\Users\potio	processor_identifier=Intel64 Family 6 Model 158 Stepping 10, GenuineIntel	programfiles(x86)=C:\Program Files (x86)	vsappiddir=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\	allusersprofile=C:\ProgramData	processor_architecture=x86	temp=C:\Users\potio\AppData\Local\Temp	processor_level=6	fps_browser_app_profile_string=Internet Explorer	vsskuedition=Community	programdata=C:\ProgramData	driverdata=C:\Windows\System32\Drivers\DriverData	public=C:\Users\Public	path=C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WireGuard\;C:\Users\potio\Managed\Git\cmd;C:\Users\potio\AppData\Local\Microsoft\WindowsApps;C:\Users\potio\Managed\repos\SDL2-2.0.14\lib\x86;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\lib\x86	logonserver=\\DESKTOP-BDF21BK	pathext=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC	sessionname=Console	systemroot=C:\Windows	programfiles=C:\Program Files (x86)	commonprogramw6432=C:\Program Files\Common Files	visualstudioedition=Microsoft Visual Studio Community 2019	userdomain=DESKTOP-BDF21BK	threadedwaitdialogdpicontext=-4	number_of_processors=12	programw6432=C:\Program Files	userprofile=C:\Users\potio	appdata=C:\Users\potio\AppData\Roaming	username=potio	complus_version=	
+		LaunchingEngine = 00000000-0000-0000-0000-000000000000
+		UseLegacyDebugEngines = No
+		LaunchSQLEngine = No
+		AttachLaunchAction = No
+		IORedirection = Auto
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +45,10 @@ Global
 		{0D4207E6-05C5-4CCB-9352-938F9EBFB1D0}.Release|x64.Build.0 = Release|x64
 		{0D4207E6-05C5-4CCB-9352-938F9EBFB1D0}.Release|x86.ActiveCfg = Release|Win32
 		{0D4207E6-05C5-4CCB-9352-938F9EBFB1D0}.Release|x86.Build.0 = Release|Win32
+		{AAE8B8E9-859C-459E-A829-CDE26215AEC1}.Debug|x64.ActiveCfg = Release|x86
+		{AAE8B8E9-859C-459E-A829-CDE26215AEC1}.Debug|x86.ActiveCfg = Release|x86
+		{AAE8B8E9-859C-459E-A829-CDE26215AEC1}.Release|x64.ActiveCfg = Release|x86
+		{AAE8B8E9-859C-459E-A829-CDE26215AEC1}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
