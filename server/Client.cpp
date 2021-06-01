@@ -6,7 +6,7 @@
 unsigned int id_counter = 0;
 
 
-Client::Client(Clients& clients, sockaddr_in sin) : clients(clients), id(++id_counter), token(""), sin(sin), paired_with(-1) {
+Client::Client(Clients& clients, sockaddr_in sin) : clients(clients), id(++id_counter), token(""), sin(sin), paired_with({}) {
 
 }
 
