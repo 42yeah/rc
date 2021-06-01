@@ -20,7 +20,7 @@ public:
 
     bool worker_should_run() const;
 
-    void set_token(std::string token);
+    void set_token(unsigned int id, std::string token);
 
     sockaddr_in get_server_sin() const;
 
@@ -30,5 +30,6 @@ private:
     sockaddr_in server_sin;
     bool worker_running;
     std::optional<std::string> token;
+    unsigned int id;
 };
 

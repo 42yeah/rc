@@ -6,7 +6,7 @@
 unsigned int id_counter = 0;
 
 
-Client::Client(Clients& clients, sockaddr_in sin) : clients(clients), id(++id_counter), token(""), sin(sin) {
+Client::Client(Clients& clients, sockaddr_in sin) : clients(clients), id(++id_counter), token(""), sin(sin), paired_with(-1) {
 
 }
 
@@ -74,6 +74,18 @@ sockaddr_in Client::get_sockaddr_in() const {
 	return sin;
 }
 
+bool Client::pair(std::string other_token) {
+	auto clients_vec = clients.get_clients();
+	auto it = std::find_if(clients_vec.begin(), clients_vec.end(), [other_token](auto& cl) {
+		return cl.authenticate(other_token);
+	});
+	if (it == clients_vec.end()) {
+		return false;
+	}
+	it->paired_with = this->id;
+	return true;
+}
+
 
 Clients::Clients(int& server_socket) : server_socket(server_socket) {
 }
@@ -112,4 +124,8 @@ std::optional<std::reference_wrapper<Client>> Clients::login_client(unsigned int
 
 const int& Clients::get_server_socket() const {
 	return server_socket;
+}
+
+const std::vector<Client>& Clients::get_clients() {
+	return clients;
 }

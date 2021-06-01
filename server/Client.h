@@ -5,7 +5,7 @@
 #include <vector>
 #include <optional>
 
-#define CLIENT_TOKEN_LEN 32
+#define CLIENT_TOKEN_LEN 8
 #define ACCESS_CODE "access_code"
 
 
@@ -29,11 +29,14 @@ public:
 
 	sockaddr_in get_sockaddr_in() const;
 
+	bool pair(std::string other_token);
+
 private:
 	unsigned int id;
+	int paired_with;
 	std::string token;
 	sockaddr_in sin;
-	const Clients& clients;
+	Clients& clients;
 };
 
 class Clients {
@@ -49,6 +52,8 @@ public:
 	std::optional<std::reference_wrapper<Client>> login_client(unsigned int id, std::string token);
 
 	const int& get_server_socket() const;
+
+	const std::vector<Client>& get_clients();
 
 private:
 	int& server_socket;

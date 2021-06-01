@@ -1,19 +1,15 @@
 #pragma once
 
 #include "Cartridge.h"
+#include <WinSock2.h>
 #include <iostream>
 
-enum class InputResult {
-    UNKNOWN, CONNECT, HOST
-};
 
-enum class Inputting {
-    ADDR, TOKEN
-};
-
-class Input : public Cartridge {
+class Connect : public Cartridge {
 public:
-    Input();
+    Connect(std::string server_addr);
+
+    ~Connect();
 
     virtual void init(App& app) override;
 
@@ -24,10 +20,8 @@ public:
     virtual void destroy(App& app) override;
 
 private:
-    Inputting inputting;
-    std::string addr;
-    InputResult result;
-    std::string input;
+    std::string server_addr;
+    sockaddr_in server_sin;
+    bool worker_running;
 };
-
 

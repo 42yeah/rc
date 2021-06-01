@@ -4,7 +4,8 @@
 enum class Command {
 	NOP = 0,
 
-	CLIENTS_REGISTER
+	CLIENTS_REGISTER,
+	CLIENT_PAIR
 };
 
 enum class ClientCommand {
@@ -13,5 +14,7 @@ enum class ClientCommand {
 	SET_TOKEN,
 	NEW_FRAME,
 	FRAME,
+	PAIR_SUCCESS,
+	PAIR_FAILURE
 };
 

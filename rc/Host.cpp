@@ -30,12 +30,12 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 			break;
 
 		case ClientCommand::SET_TOKEN: {
+			auto id = packet.next<unsigned int>();
+			TRY_DROP(id, "id is empty");
 			auto token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
 			TRY_DROP(token, "token is empty or invalid");
-			std::stringstream token_stream;
-			token_stream.write(token.value(), CLIENT_TOKEN_LEN);
-			std::string token_str = token_stream.str();
-			host.set_token(token_str);
+			std::string token_str(token.value(), CLIENT_TOKEN_LEN);
+			host.set_token(id.value(), token_str);
 			break;
 		}
 
@@ -46,7 +46,7 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 	}
 }
 
-Host::Host(App &app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true) {
+Host::Host(App &app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0) {
 	server_sin.sin_family = AF_INET;
 	server_sin.sin_port = 0;
 	server_sin.sin_addr.S_un.S_addr = 0;
@@ -104,13 +104,15 @@ void Host::update(App& app) {
 }
 
 void Host::destroy(App& app) {
+
 }
 
 bool Host::worker_should_run() const {
 	return worker_running;
 }
 
-void Host::set_token(std::string token) {
+void Host::set_token(unsigned int id, std::string token) {
+	this->id = id;
 	this->token = token;
 }
 

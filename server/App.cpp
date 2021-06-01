@@ -3,7 +3,6 @@
 
 #define TRY_DROP(x, err) if (!x.has_value()) { std::lock_guard<std::mutex> lock(data.mutex); std::cout << "[ERR] " << ip << ": " << err << std::endl; continue; }
 
-
 App::App() {
 	data.server_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -61,12 +60,29 @@ void worker(int id, std::reference_wrapper<AppData> ref_data) {
 			Client& client = ref_client.value().get();
 			std::string token = client.get_token();
 			PacketStream stream;
-			stream << ClientCommand::SET_TOKEN;
+			stream << ClientCommand::SET_TOKEN << client.get_id();
 			stream.write(token.c_str(), token.size());
 			std::cout << "Client #" << client.get_id() << " registered. Token: " << token << std::endl;
 
 			std::string str = stream.get_string();
 			sendto(data.server_socket, str.c_str(), str.size(), 0, (sockaddr*) &from, from_len);
+			break;
+		}
+
+		case Command::CLIENT_PAIR: {
+			auto self_id = packet.next<unsigned int>();
+			auto self_token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
+			TRY_DROP(self_id, "self_id not given");
+			TRY_DROP(self_token, "self_token not given");
+			std::string token(self_token.value(), CLIENT_TOKEN_LEN);
+			auto client = data.clients.login_client(self_id.value(), token);
+			TRY_DROP(client, "failed to login");
+
+			auto pair_token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
+			TRY_DROP(pair_token, "pair_token not given");
+			std::string pair_tok(pair_token.value(), CLIENT_TOKEN_LEN);
+			
+			PacketStream stream;
 			break;
 		}
 

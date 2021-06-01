@@ -4,7 +4,7 @@
 #include "Host.h"
 
 
-Input::Input() : input(""), result(InputResult::UNKNOWN) {
+Input::Input() : input(""), result(InputResult::UNKNOWN), inputting(Inputting::ADDR), addr("") {
 }
 
 void Input::init(App& app) {
@@ -41,7 +41,13 @@ void Input::sdl_event(App& app, const SDL_Event& e) {
 				break;
 
 			case InputResult::CONNECT:
-				assert(("Not implemented yet", false));
+				if (inputting == Inputting::ADDR) {
+					inputting = Inputting::TOKEN;
+					addr = input;
+					input = "";
+				} else {
+					assert(("Not implemented yet", false));
+				}
 				break;
 
 			case InputResult::HOST:
@@ -75,10 +81,18 @@ void Input::update(App& app) {
 		app.draw_text("Do you wish to connect or host?").draw(app, 0, 0);
 		app.draw_text("1. Connect").draw(app, 0, app.get_line_height());
 		app.draw_text("2. Host").draw(app, 0, app.get_line_height() * 2);
-	} else {
+	} else if (inputting == Inputting::ADDR) {
 		app.draw_text("Input server address.").draw(app, 0, 0);
 		app.draw_text("Press BACKSPACE to re-enter, and ENTER to submit.").draw(app, 0, app.get_line_height());
 		app.draw_text(input).draw(app, 0, app.get_line_height() * 2);
+	} else if (inputting == Inputting::TOKEN) {
+		app.draw_text("Input server address.").draw(app, 0, 0);
+		app.draw_text("Press BACKSPACE to re-enter, and ENTER to submit.").draw(app, 0, app.get_line_height());
+		app.draw_text(addr).draw(app, 0, app.get_line_height() * 2);
+		app.draw_text("Input buddy token.").draw(app, 0, app.get_line_height() * 3);
+		app.draw_text("Press BACKSPACE to re-enter, and ENTER to submit.").draw(app, 0, app.get_line_height() * 4);
+		app.draw_text(input).draw(app, 0, app.get_line_height() * 5);
+
 	}
 }
 
