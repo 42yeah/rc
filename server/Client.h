@@ -23,9 +23,9 @@ public:
 
 	std::string get_token();
 
-	bool start_frame(unsigned int target_id, unsigned long frame_id, unsigned int frame_len);
+	bool start_frame(unsigned long frame_id, unsigned int frame_len);
 
-	bool write_frame(unsigned int target_id, unsigned long frame_id, unsigned int part_id, const char* data, unsigned int part_length);
+	bool write_frame(unsigned long frame_id, unsigned int part_id, const char* data, unsigned int part_length);
 
 	sockaddr_in get_sockaddr_in() const;
 
@@ -33,7 +33,7 @@ public:
 
 private:
 	unsigned int id;
-	int paired_with;
+	std::optional<std::reference_wrapper<Client>> paired_with;
 	std::string token;
 	sockaddr_in sin;
 	Clients& clients;

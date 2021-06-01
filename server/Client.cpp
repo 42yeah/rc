@@ -42,29 +42,29 @@ std::string Client::get_token() {
 	return token;
 }
 
-bool Client::start_frame(unsigned int target_id, unsigned long frame_id, unsigned int frame_len) {
-	auto target_client = clients.find_client(target_id);
-	if (!target_client.has_value()) {
+bool Client::start_frame(unsigned long frame_id, unsigned int frame_len) {
+	if (!paired_with.has_value()) {
 		return false;
 	}
+	Client& target_client = paired_with.value().get();
 	PacketStream stream;
 	stream << ClientCommand::NEW_FRAME << frame_id << frame_len;
 	std::string data = stream.get_string();
-	sockaddr_in sin = target_client.value().get().get_sockaddr_in();
+	sockaddr_in sin = target_client.get_sockaddr_in();
 	sendto(clients.get_server_socket(), data.c_str(), data.size(), 0, (sockaddr *) &sin, sizeof(sin));
 	return true;
 }
 
-bool Client::write_frame(unsigned int target_id, unsigned long frame_id, unsigned int part_id, const char* data, unsigned int part_length) {
-	auto target_client = clients.find_client(target_id);
-	if (!target_client.has_value()) {
+bool Client::write_frame(unsigned long frame_id, unsigned int part_id, const char* data, unsigned int part_length) {
+	if (!paired_with.has_value()) {
 		return false;
 	}
+	Client& target_client = paired_with.value().get();
 	PacketStream stream;
 	stream << ClientCommand::FRAME << frame_id << part_id << part_length;
 	stream.write(data, part_length);
 	std::string send_data = stream.get_string();
-	sockaddr_in sin = target_client.value().get().get_sockaddr_in();
+	sockaddr_in sin = target_client.get_sockaddr_in();
 	sendto(clients.get_server_socket(), send_data.c_str(), send_data.size(), 0, (sockaddr*) &sin, sizeof(sin));
 	return true;
 }
@@ -88,7 +88,7 @@ bool Client::pair(std::string other_token) {
 	std::string str = pair_stream.get_string();
 	sendto(clients.get_server_socket(), str.c_str(), str.size(), 0, (sockaddr*) &it->sin, sizeof(it->sin));
 
-	it->paired_with = this->id;
+	it->paired_with = *this;
 	return true;
 }
 
