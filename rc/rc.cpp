@@ -4,11 +4,15 @@
 #include <iostream>
 #include <cassert>
 #include <SDL.h>
+#include <WinSock2.h>
 #include "Cartridge.h"
 #include "App.h"
 
 
 int main(int argc, char **argv) {
+    WSADATA wsa_data;
+    assert(0 == WSAStartup(MAKEWORD(2, 2), &wsa_data));
+
     App app;
     app.start();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include "Cartridge.h"
 #include "ScreenCap.h"
 
@@ -17,8 +18,17 @@ public:
 
     virtual void destroy(App& app) override;
 
+    bool worker_should_run() const;
+
+    void set_token(std::string token);
+
+    sockaddr_in get_server_sin() const;
+
 private:
     std::string server_addr;
     ScreenCap capturer;
+    sockaddr_in server_sin;
+    bool worker_running;
+    std::optional<std::string> token;
 };
 

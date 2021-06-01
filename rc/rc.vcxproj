@@ -90,12 +90,13 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\potio\Managed\repos\libjpeg-turbo\include;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\include;C:\Users\potio\Managed\repos\SDL2-2.0.14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\potio\Managed\repos\libjpeg-turbo\lib;C:\Users\potio\Managed\repos\SDL2_ttf-2.0.15\lib\x86;C:\Users\potio\Managed\repos\SDL2-2.0.14\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;msvcrtd.lib;vcruntimed.lib;ucrtd.lib;SDL2_ttf.lib;turbojpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;msvcrtd.lib;vcruntimed.lib;ucrtd.lib;SDL2_ttf.lib;turbojpeg.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -147,19 +148,23 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Cartridge.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="Host.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Packet.cpp" />
     <ClCompile Include="rc.cpp" />
     <ClCompile Include="ScreenCap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Cartridge.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="Host.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Packet.h" />
     <ClInclude Include="ScreenCap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

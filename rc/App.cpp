@@ -1,3 +1,4 @@
+#include <WinSock2.h>
 #include "App.h"
 #include "Input.h"
 #include "common.h"
@@ -10,6 +11,8 @@ App::App() {
     renderer = nullcheck(SDL_CreateRenderer(window, -1, 0));
     font = nullcheck(TTF_OpenFont("ProggyClean.ttf", 18));
     running = true;
+
+    client_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
     line_height = draw_text("TEST").height;
 
@@ -75,6 +78,10 @@ const Text& App::draw_text(std::string str) {
 
 int App::get_line_height() const {
     return line_height;
+}
+
+int App::get_client_socket() const {
+    return client_socket;
 }
 
 Text::Text(App &app, std::string str) {

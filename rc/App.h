@@ -38,6 +38,8 @@ public:
 
     int get_line_height() const;
 
+    int get_client_socket() const;
+
 private:
     std::map<std::string, std::unique_ptr<Text>> text;
     SDL_Window* window;
@@ -46,5 +48,6 @@ private:
     TTF_Font* font;
     bool running;
     int line_height;
+    int client_socket;
 };
 

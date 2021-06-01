@@ -8,6 +8,7 @@
 #define CLIENT_TOKEN_LEN 32
 #define ACCESS_CODE "access_code"
 
+
 class Clients;
 
 class Client {
