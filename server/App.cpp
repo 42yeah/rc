@@ -81,8 +81,16 @@ void worker(int id, std::reference_wrapper<AppData> ref_data) {
 			auto pair_token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
 			TRY_DROP(pair_token, "pair_token not given");
 			std::string pair_tok(pair_token.value(), CLIENT_TOKEN_LEN);
-			
+			bool paired = client.value().get().pair(pair_tok);
+
 			PacketStream stream;
+			if (paired) {
+				stream << ClientCommand::PAIR_SUCCESS;
+			} else {
+				stream << ClientCommand::PAIR_FAILURE;
+			}
+			std::string str = stream.get_string();
+			sendto(data.server_socket, str.c_str(), str.size(), 0, (sockaddr*) &from, from_len);
 			break;
 		}
 

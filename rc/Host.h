@@ -25,12 +25,16 @@ public:
 
     sockaddr_in get_server_sin() const;
 
+    void set_paired_token(unsigned int id, std::string token);
+
 private:
     std::string server_addr;
     ScreenCap capturer;
     sockaddr_in server_sin;
     bool worker_running;
     std::optional<std::string> token;
+    std::optional<int> paired_id;
+    std::optional<std::string> paired_token;
     unsigned int id;
 };
 

@@ -82,6 +82,12 @@ bool Client::pair(std::string other_token) {
 	if (it == clients_vec.end()) {
 		return false;
 	}
+	PacketStream pair_stream;
+	pair_stream << ClientCommand::PAIR << this->id;
+	pair_stream.write(token.c_str(), token.size());
+	std::string str = pair_stream.get_string();
+	sendto(clients.get_server_socket(), str.c_str(), str.size(), 0, (sockaddr*) &it->sin, sizeof(it->sin));
+
 	it->paired_with = this->id;
 	return true;
 }

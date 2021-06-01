@@ -39,6 +39,15 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 			break;
 		}
 
+		case ClientCommand::PAIR: {
+			auto id = packet.next<unsigned int>();
+			TRY_DROP(id, "paired_id is empty");
+			auto token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
+			TRY_DROP(token, "paired_token is empty");
+			host.set_paired_token(id.value(), token.value());
+			break;
+		}
+
 		default:
 			std::cerr << "Server is sending unsupported command. Dropping." << std::endl;
 			break;
@@ -46,7 +55,7 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 	}
 }
 
-Host::Host(App &app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0) {
+Host::Host(App& app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0), token({}), paired_id({}), paired_token({}) {
 	server_sin.sin_family = AF_INET;
 	server_sin.sin_port = 0;
 	server_sin.sin_addr.S_un.S_addr = 0;
@@ -96,8 +105,10 @@ void Host::update(App& app) {
 	SDL_RenderCopyEx(app.get_renderer(), capturer.get_texture(), nullptr, nullptr, 0.0, nullptr, SDL_FLIP_VERTICAL);
 	if (!token.has_value()) {
 		app.draw_text("Now serving as HOST. Access code: PENDING.").draw(app, 0, 0);
+	} else if (!paired_token.has_value()) {
+		app.draw_text("Now serving as HOST. Access code: " + token.value() + ". Waiting for buddy.").draw(app, 0, 0);
 	} else {
-		app.draw_text("Now serving as HOST. Access code: " + token.value() + ".").draw(app, 0, 0);
+		app.draw_text("Current pair: " + paired_token.value()).draw(app, 0, 0);
 	}
 	
 	app.draw_text(std::string("Frame size: ") + std::to_string(data->len)).draw(app, 0, app.get_line_height());
@@ -118,4 +129,9 @@ void Host::set_token(unsigned int id, std::string token) {
 
 sockaddr_in Host::get_server_sin() const {
 	return server_sin;
+}
+
+void Host::set_paired_token(unsigned int id, std::string token) {
+	this->paired_id = id;
+	this->paired_token = token;
 }

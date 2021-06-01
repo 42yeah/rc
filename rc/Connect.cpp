@@ -10,7 +10,7 @@
 #define TRY_DROP(x, err) if (!x.has_value()) { std::cout << "[ERR] " << err << std::endl; continue; }
 
 
-Connect::Connect(std::string other_token, std::string server_addr) : other_token(other_token), server_addr(server_addr), worker_running(true), id(0), token({}) {
+Connect::Connect(std::string other_token, std::string server_addr) : other_token(other_token), server_addr(server_addr), worker_running(true), id(0), token({}), pair_state(PairState::PENDING) {
 	server_sin.sin_addr.S_un.S_addr = 0;
 	server_sin.sin_port = 0;
 	server_sin.sin_family = AF_INET;
@@ -46,8 +46,24 @@ void receiver(std::reference_wrapper<Connect> ref_connect, std::reference_wrappe
 			TRY_DROP(token, "token is empty or invalid");
 			std::string token_str(token.value(), CLIENT_TOKEN_LEN);
 			connect.set_token(id.value(), token_str);
+
+			// Try to pair...
+			PacketStream stream;
+			stream << Command::CLIENT_PAIR << connect.get_id();
+			stream.write(token.value(), CLIENT_TOKEN_LEN);
+			stream.write(connect.get_buddy_token().c_str(), CLIENT_TOKEN_LEN);
+			std::string data = stream.get_string();
+			sendto(app.get_client_socket(), data.c_str(), data.size(), 0, (sockaddr*) &sin, sin_len);
 			break;
 		}
+
+		case ClientCommand::PAIR_SUCCESS:
+			connect.set_pair_state(PairState::PAIRED);
+			break;
+
+		case ClientCommand::PAIR_FAILURE:
+			connect.set_pair_state(PairState::FAILED);
+			break;
 
 		default:
 			std::cerr << "Server is sending unsupported command. Dropping." << std::endl;
@@ -94,9 +110,22 @@ void Connect::sdl_event(App& app, const SDL_Event& e) {
 void Connect::update(App& app) {
 	if (!token.has_value()) {
 		app.draw_text("Trying to obtain token...").draw(app, 0, 0);
-	} else {
-		app.draw_text("Token obtained. Trying to pair using buddy code " + other_token).draw(app, 0, 0);
+		return;
 	}
+	switch (pair_state) {
+	case PairState::PENDING:
+		app.draw_text("Token obtained. Trying to pair using buddy code " + other_token).draw(app, 0, 0);
+		break;
+	
+	case PairState::PAIRED:
+		app.draw_text("Current pair: " + other_token).draw(app, 0, 0);
+		break;
+
+	case PairState::FAILED:
+		app.draw_text("Pairing with " + other_token + " failed. Please try again.").draw(app, 0, 0);
+		break;
+	}
+	
 }
 
 void Connect::destroy(App& app) {
@@ -113,5 +142,17 @@ bool Connect::worker_should_run() const {
 void Connect::set_token(unsigned int id, std::string token) {
 	this->id = id;
 	this->token = token;
+}
+
+std::string Connect::get_buddy_token() const {
+	return other_token;
+}
+
+unsigned int Connect::get_id() const {
+	return id;
+}
+
+void Connect::set_pair_state(PairState pair_state) {
+	this->pair_state = pair_state;
 }
 

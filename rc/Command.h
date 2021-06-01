@@ -18,5 +18,7 @@ enum class ClientCommand {
 	NEW_FRAME,
 	FRAME,
 	PAIR_SUCCESS,
-	PAIR_FAILURE
+	PAIR_FAILURE,
+	PAIR
 };
+
