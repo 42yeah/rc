@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <optional>
+#include "common.h"
 #include "Cartridge.h"
 #include "ScreenCap.h"
 

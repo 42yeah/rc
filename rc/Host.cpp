@@ -69,7 +69,7 @@ void Host::init(App& app) {
 		app.switch_cartridge(std::make_unique<Input>());
 		return;
 	}
-	server_sin.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
+	inet_pton(AF_INET, ip.c_str(), (in_addr*) &server_sin.sin_addr);
 	server_sin.sin_port = htons(std::stoi(port));
 
 	std::thread receiver(::receiver, std::reference_wrapper<Host>(*this), std::reference_wrapper<App>(app));

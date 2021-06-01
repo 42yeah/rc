@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Cartridge.h"
-#include <WinSock2.h>
+#include "common.h"
 #include <iostream>
 
 
-class Connect : public Cartridge {
+class Connecter : public Cartridge {
 public:
-    Connect(std::string server_addr);
+    Connecter(std::string other_token, std::string server_addr);
 
-    ~Connect();
+    ~Connecter();
 
     virtual void init(App& app) override;
 
@@ -19,9 +19,18 @@ public:
 
     virtual void destroy(App& app) override;
 
+    sockaddr_in get_server_sin() const;
+
+    bool worker_should_run() const;
+
+    void set_token(unsigned int id, std::string token);
+
 private:
     std::string server_addr;
     sockaddr_in server_sin;
     bool worker_running;
+    std::string other_token;
+    unsigned int id;
+    std::string token;
 };
 

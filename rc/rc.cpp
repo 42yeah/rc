@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cassert>
 #include <SDL.h>
-#include <WinSock2.h>
+#include "common.h"
 #include "Cartridge.h"
 #include "App.h"
 

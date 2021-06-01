@@ -46,7 +46,8 @@ void Input::sdl_event(App& app, const SDL_Event& e) {
 					addr = input;
 					input = "";
 				} else {
-					assert(("Not implemented yet", false));
+					// std::unique_ptr<Connect> connect(new Connect(input, addr));
+					// app.switch_cartridge(std::move(connect));
 				}
 				break;
 

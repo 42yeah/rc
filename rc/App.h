@@ -5,6 +5,7 @@
 #include <SDL_ttf.h>
 #include <map>
 #include <cassert>
+#include "common.h"
 #include "Cartridge.h"
 
 
