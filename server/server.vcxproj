@@ -143,11 +143,15 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Command.cpp" />
+    <ClCompile Include="Packet.cpp" />
     <ClCompile Include="server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="Packet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

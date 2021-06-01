@@ -55,7 +55,7 @@ void worker(int id, std::reference_wrapper<AppData> ref_data) {
 
 			std::stringstream key_stream;
 			key_stream.write(key.value(), key_length.value());
-			auto ref_client = data.clients.register_client(key_stream.str());
+			auto ref_client = data.clients.register_client(from, key_stream.str());
 			TRY_DROP(ref_client, "cannot register for some reason");
 
 			Client& client = ref_client.value().get();
@@ -82,6 +82,6 @@ void App::start() {
 	worker(0, data);
 }
 
-AppData::AppData() : server_socket(-1), running(true) {
+AppData::AppData() : server_socket(-1), running(true), clients(server_socket) {
 
 }

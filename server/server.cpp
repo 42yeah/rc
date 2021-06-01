@@ -12,7 +12,6 @@ int main() {
     WSADATA wsa_data;
     assert(WSAStartup(MAKEWORD(2, 2), &wsa_data) == 0);
 
-    Client client;
     App().start();
 
     return 0;
