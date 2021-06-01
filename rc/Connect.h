@@ -5,11 +5,11 @@
 #include <iostream>
 
 
-class Connecter : public Cartridge {
+class Connect : public Cartridge {
 public:
-    Connecter(std::string other_token, std::string server_addr);
+    Connect(std::string other_token, std::string server_addr);
 
-    ~Connecter();
+    ~Connect();
 
     virtual void init(App& app) override;
 

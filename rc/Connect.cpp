@@ -1,4 +1,4 @@
-#include "Connecter.h"
+#include "Connect.h"
 #include <iostream>
 #include <string>
 #include "App.h"
@@ -7,23 +7,23 @@
 #include "Packet.h"
 
 
-Connecter::Connecter(std::string other_token, std::string server_addr) : other_token(other_token), server_addr(server_addr), worker_running(true), id(0), token("") {
+Connect::Connect(std::string other_token, std::string server_addr) : other_token(other_token), server_addr(server_addr), worker_running(true), id(0), token("") {
 	server_sin.sin_addr.S_un.S_addr = 0;
 	server_sin.sin_port = 0;
 	server_sin.sin_family = AF_INET;
 }
 
-Connecter::~Connecter() {
+Connect::~Connect() {
 
 }
 
-void receiver(std::reference_wrapper<Connecter> ref_connect, std::reference_wrapper<App> ref_app) {
-	Connecter& connecter = ref_connect.get();
+void receiver(std::reference_wrapper<Connect> ref_connect, std::reference_wrapper<App> ref_app) {
+	Connect& connect = ref_connect.get();
 	App& app = ref_app.get();
-	sockaddr_in sin = connecter.get_server_sin();
+	sockaddr_in sin = connect.get_server_sin();
 	int sin_len = sizeof(sin);
 	char data[MAXIMUM_PAYLOAD_SIZE] = { 0 };
-	while (connecter.worker_should_run()) {
+	while (connect.worker_should_run()) {
 		int size = recvfrom(app.get_client_socket(), data, sizeof(data), 0, (sockaddr*)&sin, &sin_len);
 		if (size <= 0) {
 			std::cerr << "Worker error: wrong recv" << std::endl;
@@ -42,7 +42,7 @@ void receiver(std::reference_wrapper<Connecter> ref_connect, std::reference_wrap
 			auto token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
 			// TRY_DROP(token, "token is empty or invalid");
 			std::string token_str(token.value(), CLIENT_TOKEN_LEN);
-			connecter.set_token(id.value(), token_str);
+			connect.set_token(id.value(), token_str);
 			break;
 		}
 
@@ -54,7 +54,7 @@ void receiver(std::reference_wrapper<Connecter> ref_connect, std::reference_wrap
 }
 
 
-void Connecter::init(App& app) {
+void Connect::init(App& app) {
 	auto port_column = server_addr.find(':', 0);
 	std::string ip = server_addr.substr(0, port_column);
 	std::string port = server_addr.substr(port_column + 1, server_addr.size());
@@ -75,24 +75,24 @@ void Connecter::init(App& app) {
 	server_sin.sin_port = htons(std::stoi(port));
 }
 
-void Connecter::sdl_event(App& app, const SDL_Event& e) {
+void Connect::sdl_event(App& app, const SDL_Event& e) {
 }
 
-void Connecter::update(App& app) {
+void Connect::update(App& app) {
 }
 
-void Connecter::destroy(App& app) {
+void Connect::destroy(App& app) {
 }
 
-sockaddr_in Connecter::get_server_sin() const {
+sockaddr_in Connect::get_server_sin() const {
 	return server_sin;
 }
 
-bool Connecter::worker_should_run() const {
+bool Connect::worker_should_run() const {
 	return worker_running;
 }
 
-void Connecter::set_token(unsigned int id, std::string token) {
+void Connect::set_token(unsigned int id, std::string token) {
 	this->id = id;
 	this->token = token;
 }

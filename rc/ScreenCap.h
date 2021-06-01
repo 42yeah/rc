@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#define _WINSOCKAPI_
 #include <Windows.h>
 #include <SDL.h>
 #include <turbojpeg.h>

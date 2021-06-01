@@ -2,6 +2,7 @@
 #include <string>
 #include "App.h"
 #include "Host.h"
+#include "Connect.h"
 
 
 Input::Input() : input(""), result(InputResult::UNKNOWN), inputting(Inputting::ADDR), addr("") {
@@ -46,8 +47,8 @@ void Input::sdl_event(App& app, const SDL_Event& e) {
 					addr = input;
 					input = "";
 				} else {
-					// std::unique_ptr<Connect> connect(new Connect(input, addr));
-					// app.switch_cartridge(std::move(connect));
+					std::unique_ptr<Connect> connect(new Connect(input, addr));
+					app.switch_cartridge(std::move(connect));
 				}
 				break;
 
