@@ -19,6 +19,8 @@ public:
 
     virtual void destroy(App& app) override;
 
+    void send_frame(std::unique_ptr<Buffer> frame);
+
     bool worker_should_run() const;
 
     void set_token(unsigned int id, std::string token);

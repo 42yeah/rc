@@ -20,7 +20,7 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 		int size = recvfrom(app.get_client_socket(), data, sizeof(data), 0, (sockaddr *) &sin, &sin_len);
 		if (size <= 0) {
 			std::cerr << "Worker error: wrong recv" << std::endl;
-			break;
+			continue;
 		}
 		Packet packet(data, size);
 		auto command = packet.next<ClientCommand>();
@@ -101,6 +101,7 @@ void Host::sdl_event(App& app, const SDL_Event& e) {
 void Host::update(App& app) {
 	capturer.shot(app.get_renderer());
 	std::unique_ptr<Buffer> data = capturer.get_jpeg_data();
+	int frame_size = data->len;
 
 	SDL_RenderCopyEx(app.get_renderer(), capturer.get_texture(), nullptr, nullptr, 0.0, nullptr, SDL_FLIP_VERTICAL);
 	if (!token.has_value()) {
@@ -109,13 +110,31 @@ void Host::update(App& app) {
 		app.draw_text("Now serving as HOST. Access code: " + token.value() + ". Waiting for buddy.").draw(app, 0, 0);
 	} else {
 		app.draw_text("Current pair: " + paired_token.value()).draw(app, 0, 0);
+		send_frame(std::move(data));
 	}
-	
-	app.draw_text(std::string("Frame size: ") + std::to_string(data->len)).draw(app, 0, app.get_line_height());
+
+	app.draw_text(std::string("Frame size: ") + std::to_string(frame_size)).draw(app, 0, app.get_line_height());
 }
 
 void Host::destroy(App& app) {
 
+}
+
+void Host::send_frame(std::unique_ptr<Buffer> frame) {
+	// Since the frame will be arriving in random order, 
+	// there is no point to arrange them. So I will just send all of them in various threads. Easy!
+	constexpr unsigned int header_size = sizeof(unsigned int) // id
+		+ CLIENT_TOKEN_LEN // client token
+		+ sizeof(unsigned long) // frame id
+		+ sizeof(unsigned int) // number of parts (frame length)
+		+ sizeof(unsigned int) // part id
+		+ sizeof(unsigned int); // part length
+
+	constexpr unsigned int max_data_size = MAXIMUM_PAYLOAD_SIZE - header_size;
+	
+	unsigned int num_parts = frame->len / max_data_size;
+
+	
 }
 
 bool Host::worker_should_run() const {

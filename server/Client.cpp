@@ -31,11 +31,9 @@ std::string Client::get_token() {
 		int n = distrib(dev);
 		if (n < 26) {
 			token += 'a' + n;
-		}
-		else if (n < 52) {
+		} else if (n < 52) {
 			token += 'A' + (n - 26);
-		}
-		else {
+		} else {
 			token += '0' + (n - 52);
 		}
 	}
@@ -55,13 +53,13 @@ bool Client::start_frame(unsigned long frame_id, unsigned int frame_len) {
 	return true;
 }
 
-bool Client::write_frame(unsigned long frame_id, unsigned int part_id, const char* data, unsigned int part_length) {
+bool Client::write_frame(unsigned long frame_id, unsigned int frame_len, unsigned int part_id, const char* data, unsigned int part_length) {
 	if (!paired_with.has_value()) {
 		return false;
 	}
 	Client& target_client = paired_with.value().get();
 	PacketStream stream;
-	stream << ClientCommand::FRAME << frame_id << part_id << part_length;
+	stream << ClientCommand::FRAME << frame_id << frame_len << part_id << part_length;
 	stream.write(data, part_length);
 	std::string send_data = stream.get_string();
 	sockaddr_in sin = target_client.get_sockaddr_in();

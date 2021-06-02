@@ -94,6 +94,42 @@ void worker(int id, std::reference_wrapper<AppData> ref_data) {
 			break;
 		}
 
+		case Command::NEW_FRAME: {
+			auto self_id = packet.next<unsigned int>();
+			auto self_token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
+			auto frame_id = packet.next<unsigned long>();
+			auto frame_len = packet.next<unsigned int>();
+			TRY_DROP(self_id, "self_id not given on new frame");
+			TRY_DROP(self_token, "self_token not given on new frame");
+			TRY_DROP(frame_id, "frame_id not given on new frame");
+			TRY_DROP(frame_len, "frame_len not given on new frame");
+			auto client = data.clients.login_client(self_id.value(), std::string(self_token.value(), CLIENT_TOKEN_LEN));
+			TRY_DROP(client, "authentication failed on new frame");
+
+			client->get().start_frame(frame_id.value(), frame_len.value());
+			break;
+		}
+
+		case Command::FRAME:
+			auto self_id = packet.next<unsigned int>();
+			auto self_token = packet.next_ptr<char>(CLIENT_TOKEN_LEN);
+			auto frame_id = packet.next<unsigned long>();
+			auto frame_len = packet.next<unsigned int>();
+			auto part_id = packet.next<unsigned int>();
+			auto part_len = packet.next<unsigned int>();
+			TRY_DROP(self_id, "self_id not provided on frame");
+			TRY_DROP(self_token, "self_token not provided on frame");
+			TRY_DROP(frame_len, "frame_len not provided on frame");
+			auto client = data.clients.login_client(self_id.value(), std::string(self_token.value(), CLIENT_TOKEN_LEN));
+			TRY_DROP(client, "authentication failed on frame");
+			TRY_DROP(frame_id, "frame_id not provided on frame");
+			TRY_DROP(part_id, "part_id not provided on frame");
+			TRY_DROP(part_len, "part_len not provided on frame");
+
+			auto frame_data = packet.next_ptr<char>(part_len.value());
+			TRY_DROP(frame_data, "frame_data not provided or invalid on frame");
+			client->get().write_frame(frame_id.value(), frame_len.value(), part_id.value(), frame_data.value(), part_len.value());
+			break;
 		}
 	}
 }

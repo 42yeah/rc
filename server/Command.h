@@ -5,7 +5,9 @@ enum class Command {
 	NOP = 0,
 
 	CLIENTS_REGISTER,
-	CLIENT_PAIR
+	CLIENT_PAIR,
+	NEW_FRAME,
+	FRAME
 };
 
 enum class ClientCommand {

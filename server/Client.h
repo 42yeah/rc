@@ -25,7 +25,7 @@ public:
 
 	bool start_frame(unsigned long frame_id, unsigned int frame_len);
 
-	bool write_frame(unsigned long frame_id, unsigned int part_id, const char* data, unsigned int part_length);
+	bool write_frame(unsigned long frame_id, unsigned int frame_len, unsigned int part_id, const char* data, unsigned int part_length);
 
 	sockaddr_in get_sockaddr_in() const;
 
