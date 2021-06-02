@@ -40,19 +40,6 @@ std::string Client::get_token() {
 	return token;
 }
 
-bool Client::start_frame(unsigned long frame_id, unsigned int frame_len) {
-	if (!paired_with.has_value()) {
-		return false;
-	}
-	Client& target_client = paired_with.value().get();
-	PacketStream stream;
-	stream << ClientCommand::NEW_FRAME << frame_id << frame_len;
-	std::string data = stream.get_string();
-	sockaddr_in sin = target_client.get_sockaddr_in();
-	sendto(clients.get_server_socket(), data.c_str(), data.size(), 0, (sockaddr *) &sin, sizeof(sin));
-	return true;
-}
-
 bool Client::write_frame(unsigned long frame_id, unsigned int frame_len, unsigned int part_id, const char* data, unsigned int part_length) {
 	if (!paired_with.has_value()) {
 		return false;

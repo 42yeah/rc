@@ -30,7 +30,11 @@ void receiver(std::reference_wrapper<Connect> ref_connect, std::reference_wrappe
 		int size = recvfrom(app.get_client_socket(), data, sizeof(data), 0, (sockaddr*)&sin, &sin_len);
 		if (size <= 0) {
 			std::cerr << "Worker error: wrong recv" << std::endl;
-			break;
+			if (app.get_client_socket() <= 0) {
+				std::cerr << "Socket is no longer valid. Quitting." << std::endl;
+				break;
+			}
+			continue;
 		}
 		Packet packet(data, size);
 		auto command = packet.next<ClientCommand>();

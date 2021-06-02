@@ -5,11 +5,14 @@
 #include "common.h"
 #include "Cartridge.h"
 #include "ScreenCap.h"
+#include "ThreadPool.h"
 
 
 class Host : public Cartridge {
 public:
     Host(App &app, std::string server_addr);
+
+    ~Host();
 
     virtual void init(App& app) override;
 
@@ -37,6 +40,7 @@ private:
     std::optional<std::string> token;
     std::optional<int> paired_id;
     std::optional<std::string> paired_token;
+    ThreadPool pool;
     unsigned int id;
 };
 

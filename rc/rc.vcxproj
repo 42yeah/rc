@@ -159,6 +159,7 @@
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="rc.cpp" />
     <ClCompile Include="ScreenCap.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="ScreenCap.h" />
+    <ClInclude Include="ThreadPool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

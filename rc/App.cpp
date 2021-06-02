@@ -21,6 +21,7 @@ App::App() {
 
 App::~App() {
     closesocket(client_socket);
+    client_socket = -1;
     TTF_CloseFont(font);
     TTF_Quit();
     SDL_DestroyRenderer(renderer);

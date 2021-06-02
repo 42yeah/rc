@@ -6,6 +6,7 @@
 #include <thread>
 #include "Packet.h"
 #include "Command.h"
+#include "ThreadPool.h"
 
 #define TRY_DROP(x, err) if (!x.has_value()) { std::cout << "[ERR] " << err << std::endl; continue; }
 
@@ -20,6 +21,10 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 		int size = recvfrom(app.get_client_socket(), data, sizeof(data), 0, (sockaddr *) &sin, &sin_len);
 		if (size <= 0) {
 			std::cerr << "Worker error: wrong recv" << std::endl;
+			if (app.get_client_socket() <= 0) {
+				std::cerr << "Socket is no longer valid. Quitting." << std::endl;
+				break;
+			}
 			continue;
 		}
 		Packet packet(data, size);
@@ -55,10 +60,13 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 	}
 }
 
-Host::Host(App& app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0), token({}), paired_id({}), paired_token({}) {
+Host::Host(App& app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0), token({}), paired_id({}), paired_token({}), pool(std::thread::hardware_concurrency()) {
 	server_sin.sin_family = AF_INET;
 	server_sin.sin_port = 0;
 	server_sin.sin_addr.S_un.S_addr = 0;
+}
+
+Host::~Host() {
 }
 
 void Host::init(App& app) {
@@ -134,7 +142,9 @@ void Host::send_frame(std::unique_ptr<Buffer> frame) {
 	
 	unsigned int num_parts = frame->len / max_data_size;
 
-	
+	pool.execute([&]() {
+		std::cout << "Wow! I am actually in thread_pool!" << std::endl;
+	});
 }
 
 bool Host::worker_should_run() const {
