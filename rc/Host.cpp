@@ -118,7 +118,7 @@ void Host::update(App& app) {
 		app.draw_text("Now serving as HOST. Access code: " + token.value() + ". Waiting for buddy.").draw(app, 0, 0);
 	} else {
 		app.draw_text("Current pair: " + paired_token.value()).draw(app, 0, 0);
-		send_frame(std::move(data));
+		send_frame(app, std::move(data));
 	}
 
 	app.draw_text(std::string("Frame size: ") + std::to_string(frame_size)).draw(app, 0, app.get_line_height());
@@ -128,7 +128,7 @@ void Host::destroy(App& app) {
 
 }
 
-void Host::send_frame(std::unique_ptr<Buffer> frame) {
+void Host::send_frame(App &app, std::unique_ptr<Buffer> frame) {
 	// Since the frame will be arriving in random order, 
 	// there is no point to arrange them. So I will just send all of them in various threads. Easy!
 	constexpr unsigned int header_size = sizeof(unsigned int) // id
@@ -142,9 +142,14 @@ void Host::send_frame(std::unique_ptr<Buffer> frame) {
 	
 	unsigned int num_parts = frame->len / max_data_size;
 
-	pool.execute([&]() {
-		std::cout << "Wow! I am actually in thread_pool!" << std::endl;
-	});
+	for (int i = 0; i < num_parts; i++) {
+		pool.execute([&]() {
+			PacketStream stream;
+			std::cout << "Part #" << i << ", from " << (i * max_data_size) << " to " << ((i + 1) * max_data_size) << ". Full is " << frame->len << " though." << std::endl;
+			
+		});
+	}
+	
 }
 
 bool Host::worker_should_run() const {

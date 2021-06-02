@@ -22,7 +22,7 @@ public:
 
     virtual void destroy(App& app) override;
 
-    void send_frame(std::unique_ptr<Buffer> frame);
+    void send_frame(App &app, std::unique_ptr<Buffer> frame);
 
     bool worker_should_run() const;
 
