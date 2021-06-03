@@ -7,6 +7,11 @@ void worker(int id, std::reference_wrapper<Channel> ref_channel) {
 
 	while (true) {
 		Message msg = channel.read();
+		{
+			std::unique_lock<std::mutex> busy_lock(channel.busy_mutex);
+			channel.busy_counter++;
+		}
+		
 		switch (msg.type) {
 		case MessageType::STOP:
 			return;
@@ -16,6 +21,11 @@ void worker(int id, std::reference_wrapper<Channel> ref_channel) {
 				msg.job.value()();
 			}
 			break;
+		}
+		{
+			std::unique_lock<std::mutex> busy_lock(channel.busy_mutex);
+			channel.busy_counter--;
+			channel.busy_var.notify_one();
 		}
 	}
 }
@@ -37,6 +47,18 @@ ThreadPool::~ThreadPool() {
 
 void ThreadPool::execute(std::function<void(void)> func) {
 	channel.write(Message{ MessageType::EXECUTE, func });
+}
+
+void ThreadPool::wait_until_idle() {
+	std::unique_lock<std::mutex> busy_lock(channel.busy_mutex);
+	channel.busy_var.wait(busy_lock, [&]() {
+		return channel.busy_counter == 0;
+	});
+}
+
+
+Channel::Channel() : busy_counter(0) {
+
 }
 
 void Channel::write(Message msg) {

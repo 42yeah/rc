@@ -44,11 +44,12 @@ public:
 	PacketStream& operator<<(T what) {
 		assert(size + sizeof(T) <= MAXIMUM_PAYLOAD_SIZE);
 		size += sizeof(T);
-		stream.write((const char*)&what, sizeof(T));
+		stream.write((const char*) &what, sizeof(T));
 		return *this;
 	}
 
 	void write(const char* what, unsigned int size) {
+		std::cout << "Current size: " << this->size << ", new payload size: " << size << std::endl;
 		assert(this->size + size <= MAXIMUM_PAYLOAD_SIZE);
 		this->size += size;
 		stream.write(what, size);

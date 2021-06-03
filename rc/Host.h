@@ -41,6 +41,7 @@ private:
     std::optional<int> paired_id;
     std::optional<std::string> paired_token;
     ThreadPool pool;
+    unsigned long frame_id;
     unsigned int id;
 };
 

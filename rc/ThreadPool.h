@@ -20,6 +20,8 @@ struct Message {
 
 struct Channel {
 public:
+	Channel();
+
 	void write(Message msg);
 
 	Message read();
@@ -27,6 +29,10 @@ public:
 	std::vector<Message> messages;
 	std::mutex mutex;
 	std::condition_variable cond_var;
+
+	std::mutex busy_mutex;
+	std::condition_variable busy_var;
+	int busy_counter;
 };
 
 class ThreadPool {
@@ -36,6 +42,8 @@ public:
 	~ThreadPool();
 
 	void execute(std::function<void(void)> func);
+
+	void wait_until_idle();
 
 private:
 	Channel channel;

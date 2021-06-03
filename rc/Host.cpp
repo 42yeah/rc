@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <mutex>
 #include "Packet.h"
 #include "Command.h"
 #include "ThreadPool.h"
@@ -60,7 +61,7 @@ void receiver(std::reference_wrapper<Host> ref_host, std::reference_wrapper<App>
 	}
 }
 
-Host::Host(App& app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0), token({}), paired_id({}), paired_token({}), pool(std::thread::hardware_concurrency()) {
+Host::Host(App& app, std::string server_addr) : server_addr(server_addr), capturer(app.get_renderer()), worker_running(true), id(0), token({}), paired_id({}), paired_token({}), pool(std::thread::hardware_concurrency()), frame_id(0) {
 	server_sin.sin_family = AF_INET;
 	server_sin.sin_port = 0;
 	server_sin.sin_addr.S_un.S_addr = 0;
@@ -131,7 +132,8 @@ void Host::destroy(App& app) {
 void Host::send_frame(App &app, std::unique_ptr<Buffer> frame) {
 	// Since the frame will be arriving in random order, 
 	// there is no point to arrange them. So I will just send all of them in various threads. Easy!
-	constexpr unsigned int header_size = sizeof(unsigned int) // id
+	constexpr unsigned int header_size = sizeof(Command) // command
+		+ sizeof(unsigned int) // id
 		+ CLIENT_TOKEN_LEN // client token
 		+ sizeof(unsigned long) // frame id
 		+ sizeof(unsigned int) // number of parts (frame length)
@@ -141,15 +143,35 @@ void Host::send_frame(App &app, std::unique_ptr<Buffer> frame) {
 	constexpr unsigned int max_data_size = MAXIMUM_PAYLOAD_SIZE - header_size;
 	
 	unsigned int num_parts = frame->len / max_data_size;
+	int client_socket = app.get_client_socket();
+	unsigned char* data = frame->data;
+	sockaddr_in sin = this->server_sin;
+	int id = this->id;
+	std::mutex mutex;
 
-	for (int i = 0; i < num_parts; i++) {
-		pool.execute([&]() {
+	for (unsigned int i = 0; i < num_parts; i++) {
+		pool.execute([&, i, client_socket, data, sin]() {
+			std::unique_lock<std::mutex> lock(mutex);
 			PacketStream stream;
-			std::cout << "Part #" << i << ", from " << (i * max_data_size) << " to " << ((i + 1) * max_data_size) << ". Full is " << frame->len << " though." << std::endl;
-			
+
+			unsigned int start = i * max_data_size;
+			unsigned int end = (i + 1) * max_data_size;
+			if (end > frame->len) {
+				end = frame->len;
+			}
+
+			stream << Command::FRAME << id;
+			stream.write(token.value().c_str(), CLIENT_TOKEN_LEN);
+			stream << frame_id << num_parts << i << (end - start);
+			stream.write((const char *) &data[start], end - start);
+
+			std::string data = stream.get_string();
+			sendto(client_socket, data.c_str(), data.size(), 0, (sockaddr*) &sin, sizeof(sin));
 		});
 	}
+	pool.wait_until_idle();
 	
+	frame_id++;
 }
 
 bool Host::worker_should_run() const {
